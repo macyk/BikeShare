@@ -1,9 +1,9 @@
 application: miaomiaogames
 version: 1
-runtime: python
+runtime: python27
 api_version: 1
-threadsafe: false
+threadsafe: true
 
 handlers:
 - url: /.*
-  script: helloworld.py
+  script: helloworld.application
