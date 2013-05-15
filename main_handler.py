@@ -33,7 +33,6 @@ from oauth2client.appengine import StorageByKeyName
 from model import Credentials
 import util
 
-
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -118,6 +117,7 @@ class MainHandler(webapp2.RequestHandler):
   def _insert_item(self):
     """Insert a timeline item."""
     logging.info('Inserting timeline item')
+    item_id = ''
     body = {
         'notification': {'level': 'DEFAULT'}
     }
@@ -137,8 +137,18 @@ class MainHandler(webapp2.RequestHandler):
       media = None
 
     # self.mirror_service is initialized in util.auth_required.
-    self.mirror_service.timeline().insert(body=body, media_body=media).execute()
-    return  'A timeline item has been inserted.'
+    timeline_items = self.mirror_service.timeline().list(maxResults=3).execute()
+    if timeline_items:
+      cards = timeline_items.get('items', []);
+      if cards:
+        if cards[0].get('id'):
+          item_id = cards[0].get('id')
+          self.mirror_service.timeline().update(id = item_id, body=body, media_body=media).execute()
+    #if timeline_items:
+    else:
+      self.mirror_service.timeline().insert(body=body, media_body=media).execute()
+
+    return  cards[0].get('id')
 
   def _insert_item_with_action(self):
     """Insert a timeline item user can reply to."""
