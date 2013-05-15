@@ -31,7 +31,6 @@ from apiclient.http import MediaIoBaseUpload
 from oauth2client.appengine import StorageByKeyName
 
 from model import Credentials
-import scraper
 import util
 
 
@@ -139,7 +138,7 @@ class MainHandler(webapp2.RequestHandler):
 
     # self.mirror_service is initialized in util.auth_required.
     self.mirror_service.timeline().insert(body=body, media_body=media).execute()
-    return  scraper.get_stations('toronto')
+    return  'A timeline item has been inserted.'
 
   def _insert_item_with_action(self):
     """Insert a timeline item user can reply to."""
