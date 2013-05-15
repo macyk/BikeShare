@@ -27,11 +27,12 @@ from oauth2client.appengine import StorageByKeyName
 
 from model import Credentials
 import util
+import scraper
 
 
 class NotifyHandler(webapp2.RequestHandler):
   """Request Handler for notification pings."""
-
+  Item_id = None
   def post(self):
     """Handles notification pings."""
     logging.info('Got a notification with payload %s', self.request.body)
@@ -49,8 +50,7 @@ class NotifyHandler(webapp2.RequestHandler):
   def _handle_locations_notification(self, data):
     """Handle locations notification."""
     location = self.mirror_service.locations().get(id=data['itemId']).execute()
-    text = 'New location is %s, %s' % (location.get('latitude'),
-                                       location.get('longitude'))
+    text = scraper.get_stations('toronto', 'Princess Ave / King St', 'King St W / Spadina Ave')
     logging.info(text)
     body = {
         'text': text,
@@ -58,7 +58,9 @@ class NotifyHandler(webapp2.RequestHandler):
         'menuItems': [{'action': 'NAVIGATE'}],
         'notification': {'level': 'DEFAULT'}
     }
-    self.mirror_service.timeline().insert(body=body).execute()
+    if(Item_id==None):
+      new_item = self.mirror_service.timeline().insert(body=body).execute()
+      Item_id = new_item.get('id')
 
   def _handle_timeline_notification(self, data):
     """Handle timeline notification."""
