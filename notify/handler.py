@@ -32,7 +32,7 @@ import scraper
 
 class NotifyHandler(webapp2.RequestHandler):
   """Request Handler for notification pings."""
-  Item_id = None
+
   def post(self):
     """Handles notification pings."""
     logging.info('Got a notification with payload %s', self.request.body)
@@ -58,9 +58,11 @@ class NotifyHandler(webapp2.RequestHandler):
         'menuItems': [{'action': 'NAVIGATE'}],
         'notification': {'level': 'DEFAULT'}
     }
-    if(Item_id==None):
+    if not Item_id:
       new_item = self.mirror_service.timeline().insert(body=body).execute()
       Item_id = new_item.get('id')
+    else:
+      self,mirror_service.timeline().update(id = Item_id, body=body).execute()
 
   def _handle_timeline_notification(self, data):
     """Handle timeline notification."""
