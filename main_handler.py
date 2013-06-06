@@ -32,7 +32,7 @@ from oauth2client.appengine import StorageByKeyName
 
 from model import Credentials
 import util
-
+import scraper
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -87,7 +87,8 @@ class MainHandler(webapp2.RequestHandler):
         'insertItemWithAction': self._insert_item_with_action,
         'insertItemAllUsers': self._insert_item_all_users,
         'insertContact': self._insert_contact,
-        'deleteContact': self._delete_contact
+        'deleteContact': self._delete_contact,
+        'getBikeUpdate': self._bike_update
     }
     if operation in operations:
       message = operations[operation]()
@@ -139,6 +140,29 @@ class MainHandler(webapp2.RequestHandler):
     # self.mirror_service is initialized in util.auth_required.
     self.mirror_service.timeline().insert(body=body, media_body=media).execute()
     return  'A timeline item has been inserted.'
+
+  def _bike_update(self):
+    """Insert a timeline item."""
+    logging.info('Inserting timeline item')
+    body = {
+        'notification': {'level': 'DEFAULT'}
+    }
+    if self.request.get('html') == 'on':
+      body['html'] = [self.request.get('message')]
+    else:
+      text = scraper.get_stations('toronto', 'Princess Ave / King St', 'King St W / Spadina Ave')
+      body['text'] = text
+
+    # self.mirror_service is initialized in util.auth_required.
+    timeline_items = self.mirror_service.timeline().list(maxResults=3).execute()
+    cards = timeline_items.get('items', [])
+    item_id = cards[0].get('id')
+    if item_id:
+      self.mirror_service.timeline().update(id=item_id, body=body).execute()
+    else:
+      self.mirror_service.timeline().insert(body=body).execute()
+
+    return  'Sent a bike update.'
 
   def _insert_item_with_action(self):
     """Insert a timeline item user can reply to."""
