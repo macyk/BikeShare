@@ -1,6 +1,6 @@
-Google Mirror API's Quickstart for Python
+Bike Share for Google Glass
 ========================
 
-The documentation for this quickstart is maintained on developers.google.com.
-Please see here for more information:
-https://developers.google.com/glass/quickstart/python
+This is a Bike Sharing App for Google Glass.
+
+
