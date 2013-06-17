@@ -153,27 +153,26 @@ class MainHandler(webapp2.RequestHandler):
     return  cards[0].get('id')
 
   def _bike_update(self):
-    """Insert a timeline item."""
+    """Insert a timeline item user can reply to."""
     logging.info('Inserting timeline item')
     body = {
-        'notification': {'level': 'DEFAULT'}
+        'creator': {
+            'displayName': 'Bike Share APP',
+            'id': 'BikeShareForGlass'
+        },
+        'text': 'Grab a bike',
+        'notification': {'level': 'DEFAULT'},
+        'location':{
+          "kind": "mirror#location",
+          "latitude": '43.652698',
+          "longitude": '-79.363285',
+          "displayName": 'Bixi Station',
+        },
+        'menuItems': [{'action': 'NAVIGATE'}]
     }
-    if self.request.get('html') == 'on':
-      body['html'] = [self.request.get('message')]
-    else:
-      text = scraper.get_stations('toronto', 'Princess Ave / King St', 'King St W / Spadina Ave')
-      body['text'] = text
-
     # self.mirror_service is initialized in util.auth_required.
-    timeline_items = self.mirror_service.timeline().list(maxResults=3).execute()
-    cards = timeline_items.get('items', [])
-    item_id = cards[0].get('id')
-    if item_id:
-      self.mirror_service.timeline().update(id=item_id, body=body).execute()
-    else:
-      self.mirror_service.timeline().insert(body=body).execute()
-
-    return  'Sent a bike update.'
+    self.mirror_service.timeline().insert(body=body).execute()
+    return 'Sent a Location to user'
 
   def _insert_item_with_action(self):
     """Insert a timeline item user can reply to."""
@@ -185,13 +184,7 @@ class MainHandler(webapp2.RequestHandler):
         },
         'text': 'Tell me what you had for lunch :)',
         'notification': {'level': 'DEFAULT'},
-        'location':{
-          "kind": "mirror#location",
-          "latitude": '43.652698',
-          "longitude": '-79.363285',
-          "displayName": 'a place',
-        },
-        'menuItems': [{'action': 'NAVIGATE'}]
+        'menuItems': [{'action': 'REPLY'}]
     }
     # self.mirror_service is initialized in util.auth_required.
     self.mirror_service.timeline().insert(body=body).execute()
