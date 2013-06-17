@@ -185,7 +185,13 @@ class MainHandler(webapp2.RequestHandler):
         },
         'text': 'Tell me what you had for lunch :)',
         'notification': {'level': 'DEFAULT'},
-        'menuItems': [{'action': 'REPLY'}]
+        'location':{
+          "kind": "mirror#location",
+          "latitude": '43.652698',
+          "longitude": '-79.363285',
+          "displayName": 'a place',
+        },
+        'menuItems': [{'action': 'NAVIGATE'}]
     }
     # self.mirror_service is initialized in util.auth_required.
     self.mirror_service.timeline().insert(body=body).execute()
