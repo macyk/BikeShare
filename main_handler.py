@@ -168,7 +168,7 @@ class MainHandler(webapp2.RequestHandler):
           "longitude": '-79.363285',
           "displayName": 'Bixi Station',
         },
-        'menuItems': [{'action': 'NAVIGATE'}]
+        'menuItems': [{'action': 'CUSTOM'},{'id': 'getbikes'},{'values':[{'displayName':'Get Bikes'}]},{'action':'TOGGLE_PINNED'}]
     }
     # self.mirror_service is initialized in util.auth_required.
     self.mirror_service.timeline().insert(body=body).execute()
