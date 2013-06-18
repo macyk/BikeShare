@@ -155,6 +155,7 @@ class MainHandler(webapp2.RequestHandler):
   def _bike_update(self):
     """Insert a timeline item user can reply to."""
     logging.info('Inserting timeline item')
+    iconUrl = 'https://miaomiaogames.appspot.com/static/images/saturn-eclipse.jpg'
     body = {
         'creator': {
             'displayName': 'Bike Share APP',
@@ -168,11 +169,11 @@ class MainHandler(webapp2.RequestHandler):
           "longitude": '-79.363285',
           "displayName": 'Bixi Station',
         },
-        'menuItems': [{'action': 'CUSTOM'},{'id': 'getbikes'},{'values':[{'displayName':'Get Bikes'}]},{'action':'TOGGLE_PINNED'}]
+        'menuItems': [{'action': 'CUSTOM'},{'values':[{'displayName':'Get Bikes','iconUrl':iconUrl}]}]
     }
     # self.mirror_service is initialized in util.auth_required.
     self.mirror_service.timeline().insert(body=body).execute()
-    return 'Sent a Location to user'
+    return iconUrl
 
   def _insert_item_with_action(self):
     """Insert a timeline item user can reply to."""
