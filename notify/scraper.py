@@ -9,24 +9,9 @@ def get_stations(city, station_start, station_end):
     response = urllib.urlopen(url)
     content = ET.parse(response)
 
-    # Go through the Javascript, looking for `var station`s
-    # Best API ever
-    #matches = content.getroot().findall("station")
-
     stations = {}
 
     for station in content.getroot().findall("station"):
-        # Take everything between the { and the closing } (inclusive)
-        # station_json = match[match.index('{'):match.index('}') + 1]
-
-        # Have to double-quote all the keys before loading it
-        # If there's extra whitespace before the key, ignore it
-        # station_json = re.sub('(?P<prefix>[{,])[ ]?(?P<key>[^:]+):', '\g<prefix>"\g<key>":', station_json)
-
-        # Some stations have unnecessarily escaped single quotes - fix that
-        # station_json = station_json.replace("\\'", "'")
-        # station = json.loads(station_json)
-
         # Save it in the stations dictionary
         station_id = int(station.find('id').text)
         stations[station_id] = {
