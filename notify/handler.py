@@ -42,10 +42,8 @@ class NotifyHandler(webapp2.RequestHandler):
     self.mirror_service = util.create_service(
         'mirror', 'v1',
         StorageByKeyName(Credentials, userid, 'credentials').get())
-    if data.get('collection') == 'locations':
-      self._handle_locations_notification(data)
-    elif data.get('collection') == 'timeline':
-      self._handle_timeline_notification(data)
+    logging.info('handle callback')
+    self._handle_getbikes_notification(data)
 
   def _handle_locations_notification(self, data):
     """Handle locations notification."""
@@ -63,6 +61,18 @@ class NotifyHandler(webapp2.RequestHandler):
       Item_id = new_item.get('id')
     else:
       self,mirror_service.timeline().update(id = Item_id, body=body).execute()
+
+  def _handle_getbikes_notification(self, data):
+    """Handle locations notification."""
+    text = scraper.get_stations('toronto', 'Princess Ave / King St', 'King St W / Spadina Ave')
+    logging.info(text)
+    body = {
+        'text': text,
+        'menuItems': [{'action': 'NAVIGATE'}],
+        'notification': {'level': 'DEFAULT'}
+    }
+    self.mirror_service.timeline().insert(body=body).execute()
+     
 
   def _handle_timeline_notification(self, data):
     """Handle timeline notification."""
