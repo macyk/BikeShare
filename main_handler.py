@@ -26,16 +26,40 @@ import webapp2
 from google.appengine.api import memcache
 from google.appengine.api import urlfetch
 
+import httplib2
 from apiclient import errors
 from apiclient.http import MediaIoBaseUpload
+from apiclient.http import BatchHttpRequest
 from oauth2client.appengine import StorageByKeyName
 
 from model import Credentials
 import util
-import scraper
+
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
+
+
+class _BatchCallback(object):
+  """Class used to track batch request responses."""
+
+  def __init__(self):
+    """Initialize a new _BatchCallbaclk object."""
+    self.success = 0
+    self.failure = 0
+
+  def callback(self, request_id, response, exception):
+    """Method called on each HTTP Response from a batch request.
+
+    For more information, see
+      https://developers.google.com/api-client-library/python/guide/batch
+    """
+    if exception is None:
+      self.success += 1
+    else:
+      self.failure += 1
+      logging.error(
+          'Failed to insert item for user %s: %s', request_id, exception)
 
 
 class MainHandler(webapp2.RequestHandler):
@@ -119,7 +143,6 @@ class MainHandler(webapp2.RequestHandler):
   def _insert_item(self):
     """Insert a timeline item."""
     logging.info('Inserting timeline item')
-    item_id = ''
     body = {
         'notification': {'level': 'DEFAULT'}
     }
@@ -139,23 +162,13 @@ class MainHandler(webapp2.RequestHandler):
       media = None
 
     # self.mirror_service is initialized in util.auth_required.
-    timeline_items = self.mirror_service.timeline().list(maxResults=3).execute()
-    if timeline_items:
-      cards = timeline_items.get('items', []);
-      if cards:
-        if cards[0].get('id'):
-          item_id = cards[0].get('id')
-          self.mirror_service.timeline().update(id = item_id, body=body, media_body=media).execute()
-    #if timeline_items:
-    else:
-      self.mirror_service.timeline().insert(body=body, media_body=media).execute()
-
-    return  cards[0].get('id')
+    self.mirror_service.timeline().insert(body=body, media_body=media).execute()
+    return  'A timeline item has been inserted.'
 
   def _bike_update(self):
     """Insert a timeline item user can reply to."""
     logging.info('Inserting timeline item')
-    iconUrl = 'https://miaomiaogames.appspot.com/static/images/saturn-eclipse.jpg'
+    iconUrl = util.get_full_url(self, '/static/images/bike.png')
     body = {
         'creator': {
             'displayName': 'Bike Share APP',
@@ -181,7 +194,7 @@ class MainHandler(webapp2.RequestHandler):
     logging.info('Inserting timeline item')
     body = {
         'creator': {
-            'displayName': 'Bike Share APP',
+            'displayName': 'Python Starter Project',
             'id': 'PYTHON_STARTER_PROJECT'
         },
         'text': 'Tell me what you had for lunch :)',
@@ -205,16 +218,20 @@ class MainHandler(webapp2.RequestHandler):
         'text': 'Hello Everyone!',
         'notification': {'level': 'DEFAULT'}
     }
+
+    batch_responses = _BatchCallback()
+    batch = BatchHttpRequest(callback=batch_responses.callback)
     for user in users:
       creds = StorageByKeyName(
           Credentials, user.key().name(), 'credentials').get()
       mirror_service = util.create_service('mirror', 'v1', creds)
-      try:
-        mirror_service.timeline().insert(body=body).execute()
-      except errors.HttpError, error:
-        logging.error(
-            'Unable to send item to user %s: %s', user.key().name(), error)
-    return 'Sent cards to %d users.' % total_users
+      batch.add(
+          mirror_service.timeline().insert(body=body),
+          request_id=user.key().name())
+
+    batch.execute(httplib2.Http())
+    return 'Successfully sent cards to %d users (%d failed).' % (
+        batch_responses.success, batch_responses.failure)
 
   def _insert_contact(self):
     """Insert a new Contact."""

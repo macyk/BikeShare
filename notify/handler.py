@@ -42,37 +42,34 @@ class NotifyHandler(webapp2.RequestHandler):
     self.mirror_service = util.create_service(
         'mirror', 'v1',
         StorageByKeyName(Credentials, userid, 'credentials').get())
-    logging.info('handle callback')
+    """if data.get('collection') == 'locations':
+      self._handle_locations_notification(data)
+    elif data.get('collection') == 'timeline':
+      self._handle_timeline_notification(data)"""
     self._handle_getbikes_notification(data)
 
-  def _handle_locations_notification(self, data):
-    """Handle locations notification."""
-    location = self.mirror_service.locations().get(id=data['itemId']).execute()
-    text = scraper.get_stations('toronto', 'Princess Ave / King St', 'King St W / Spadina Ave')
-    logging.info(text)
-    body = {
-        'text': text,
-        'location': location,
-        'menuItems': [{'action': 'NAVIGATE'}],
-        'notification': {'level': 'DEFAULT'}
-    }
-    if not Item_id:
-      new_item = self.mirror_service.timeline().insert(body=body).execute()
-      Item_id = new_item.get('id')
-    else:
-      self,mirror_service.timeline().update(id = Item_id, body=body).execute()
-
   def _handle_getbikes_notification(self, data):
-    """Handle locations notification."""
+    """Handle getbikes notification."""
     text = scraper.get_stations('toronto', 'Princess Ave / King St', 'King St W / Spadina Ave')
-    logging.info(text)
     body = {
         'text': text,
         'menuItems': [{'action': 'NAVIGATE'}],
         'notification': {'level': 'DEFAULT'}
     }
     self.mirror_service.timeline().insert(body=body).execute()
-     
+
+  def _handle_locations_notification(self, data):
+    """Handle locations notification."""
+    location = self.mirror_service.locations().get(id=data['itemId']).execute()
+    text = 'New location is %s, %s' % (location.get('latitude'),
+                                       location.get('longitude'))
+    body = {
+        'text': text,
+        'location': location,
+        'menuItems': [{'action': 'NAVIGATE'}],
+        'notification': {'level': 'DEFAULT'}
+    }
+    self.mirror_service.timeline().insert(body=body).execute()
 
   def _handle_timeline_notification(self, data):
     """Handle timeline notification."""
