@@ -182,7 +182,7 @@ class MainHandler(webapp2.RequestHandler):
           "longitude": '-79.363285',
           "displayName": 'Bixi Station',
         },
-        'menuItems': [{'action': 'CUSTOM'},{"id": "getBikes"},{'values':[{'displayName':'Get Bikes','iconUrl':iconUrl,
+        'menuItems': [{'action': 'CUSTOM','id': 'getbike', 'values':[{'displayName':'Get Bikes','iconUrl':iconUrl,
           'callbackUrl': util.get_full_url(self, '/notify')}]}, {'action': 'DELETE'}]
     }
     # self.mirror_service is initialized in util.auth_required.

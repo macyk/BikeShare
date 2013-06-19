@@ -90,13 +90,17 @@ class NotifyHandler(webapp2.RequestHandler):
         # Only handle the first successful action.
         break
       elif user_action.get('type') == 'CUSTOM':
-        text = scraper.get_stations('toronto', 'Princess Ave / King St', 'King St W / Spadina Ave')
-        body = {
-            'text': text,
-            'menuItems': [{'action': 'DELETE'}],
-            'notification': {'level': 'DEFAULT'}
-        }
-        self.mirror_service.timeline().insert(body=body).execute()
+        """ if the user clicked on get bikes option """
+        logging.info("Get Bikes?????")
+        if user_action.get('payload') == 'getbike':
+          logging.info("Get Bikes!!!!!")
+          text = scraper.get_stations('toronto', 'Princess Ave / King St', 'King St W / Spadina Ave')
+          body = {
+              'text': text,
+              'menuItems': [{'action': 'DELETE'}],
+              'notification': {'level': 'DEFAULT'}
+          }
+          self.mirror_service.timeline().insert(body=body).execute()
       else:
         logging.info(
             "I don't know what to do with this notification: %s", user_action)
