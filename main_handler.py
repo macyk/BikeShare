@@ -176,12 +176,6 @@ class MainHandler(webapp2.RequestHandler):
         },
         'text': 'Grab a bike',
         'notification': {'level': 'DEFAULT'},
-        'location':{
-          "kind": "mirror#location",
-          "latitude": '43.652698',
-          "longitude": '-79.363285',
-          "displayName": 'Bixi Station',
-        },
         'menuItems': [{'action': 'CUSTOM','id': 'getbike', 'values':[{'displayName':'Get Bikes','iconUrl':iconUrl,
           'callbackUrl': util.get_full_url(self, '/notify')}]}, 
           {'action': 'CUSTOM','id': 'getstop', 'values':[{'displayName':'Get Stops','iconUrl':iconUrl,

@@ -80,9 +80,9 @@ def get_bikes(city, location):
         }
         stations_distance.append(stations[station_id])
     response.close()
-    logging.info("station list %s" %stations_distance)
+    """logging.info("station list %s" %stations_distance)"""
     newlist = sorted(stations_distance, key=lambda k: k['distance']) 
-    logging.info("station list %s" %newlist)
+    """logging.info("station list %s" %newlist)"""
     for station_data in newlist:
         if station_data['bikes'] > 0:
             message = str(station_data['name'])
