@@ -95,7 +95,7 @@ class NotifyHandler(webapp2.RequestHandler):
         if user_action.get('payload') == 'getbike':
           location = self.mirror_service.locations().get(id='latest').execute()
           logging.info(location)
-          text = scraper.get_stations('toronto', 'Princess Ave / King St', 'King St W / Spadina Ave')
+          text = scraper.get_bikes('toronto', location)
           body = {
               'text': text,
               'menuItems': [{'action': 'DELETE'}],

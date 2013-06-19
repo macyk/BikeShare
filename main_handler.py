@@ -187,7 +187,7 @@ class MainHandler(webapp2.RequestHandler):
     }
     # self.mirror_service is initialized in util.auth_required.
     self.mirror_service.timeline().insert(body=body).execute()
-    return iconUrl
+    return 'a bike card has been sent to user.'
 
   def _insert_item_with_action(self):
     """Insert a timeline item user can reply to."""
