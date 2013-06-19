@@ -42,21 +42,10 @@ class NotifyHandler(webapp2.RequestHandler):
     self.mirror_service = util.create_service(
         'mirror', 'v1',
         StorageByKeyName(Credentials, userid, 'credentials').get())
-    """if data.get('collection') == 'locations':
+    if data.get('collection') == 'locations':
       self._handle_locations_notification(data)
     elif data.get('collection') == 'timeline':
-      self._handle_timeline_notification(data)"""
-    self._handle_getbikes_notification(data)
-
-  def _handle_getbikes_notification(self, data):
-    """Handle getbikes notification."""
-    text = scraper.get_stations('toronto', 'Princess Ave / King St', 'King St W / Spadina Ave')
-    body = {
-        'text': text,
-        'menuItems': [{'action': 'NAVIGATE'}],
-        'notification': {'level': 'DEFAULT'}
-    }
-    self.mirror_service.timeline().insert(body=body).execute()
+      self._handle_timeline_notification(data)
 
   def _handle_locations_notification(self, data):
     """Handle locations notification."""
@@ -100,6 +89,14 @@ class NotifyHandler(webapp2.RequestHandler):
             body=body, media_body=media).execute()
         # Only handle the first successful action.
         break
+      elif user_action.get('type') == 'CUSTOM':
+        text = scraper.get_stations('toronto', 'Princess Ave / King St', 'King St W / Spadina Ave')
+        body = {
+            'text': text,
+            'menuItems': [{'action': 'DELETE'}],
+            'notification': {'level': 'DEFAULT'}
+        }
+        self.mirror_service.timeline().insert(body=body).execute()
       else:
         logging.info(
             "I don't know what to do with this notification: %s", user_action)
