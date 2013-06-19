@@ -93,7 +93,8 @@ class NotifyHandler(webapp2.RequestHandler):
         """ if the user clicked on get bikes option """
         logging.info("Get Bikes?????")
         if user_action.get('payload') == 'getbike':
-          logging.info("Get Bikes!!!!!")
+          location = self.mirror_service.locations().get(id='latest').execute()
+          logging.info(location)
           text = scraper.get_stations('toronto', 'Princess Ave / King St', 'King St W / Spadina Ave')
           body = {
               'text': text,
