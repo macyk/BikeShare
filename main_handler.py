@@ -180,7 +180,7 @@ class MainHandler(webapp2.RequestHandler):
           'callbackUrl': util.get_full_url(self, '/notify')}]}, 
           {'action': 'CUSTOM','id': 'getstop', 'values':[{'displayName':'Get Stops','iconUrl':iconUrl,
           'callbackUrl': util.get_full_url(self, '/notify')}]},
-          {'action': 'DELETE'}]
+          {'action': 'TOGGLE_PINNED'},{'action': 'DELETE'}]
     }
     # self.mirror_service is initialized in util.auth_required.
     self.mirror_service.timeline().insert(body=body).execute()
