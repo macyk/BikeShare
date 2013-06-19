@@ -83,11 +83,10 @@ def get_bikes(city, location):
     logging.info("station list %s" %stations_distance)
     newlist = sorted(stations_distance, key=lambda k: k['distance']) 
     logging.info("station list %s" %newlist)
-    message = ''
     for station_data in newlist:
         if station_data['bikes'] > 0:
             message = str(station_data['name'])
-            return message
+            return station_data
 
 def get_stops(city, location):
     logging.info("get_bikes")
@@ -121,11 +120,10 @@ def get_stops(city, location):
     logging.info("station list %s" %stations_distance)
     newlist = sorted(stations_distance, key=lambda k: k['distance']) 
     logging.info("station list %s" %newlist)
-    message = ''
     for station_data in newlist:
         if station_data['docks'] > 0:
             message = str(station_data['name'])
-            return message
+            return station_data
 
 def distance_on_unit_sphere(lat1, long1, lat2, long2):
 

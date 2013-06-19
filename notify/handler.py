@@ -96,21 +96,33 @@ class NotifyHandler(webapp2.RequestHandler):
         if callback_id == 'getbike':
             logging.info("Get Bikes")
             location = self.mirror_service.locations().get(id='latest').execute()
-            text = scraper.get_bikes('toronto', location)
+            station_data = scraper.get_bikes('toronto', location)
             body = {
-                'text': text,
-                'menuItems': [{'action': 'DELETE'}],
-                'notification': {'level': 'DEFAULT'}
+                'text': ('%s has %s bikes' % (station_data.get('name'), station_data.get('bikes'))),
+                'notification': {'level': 'DEFAULT'},
+                'location':{
+                  "kind": "mirror#location",
+                  "latitude": '43.652698',
+                  "longitude": '-79.363285',
+                  "displayName": 'Bixi Station',
+                },
+                'menuItems': [{'action': 'NAVIGATE'}]
             }
             self.mirror_service.timeline().insert(body=body).execute()
         if callback_id == 'getstop':
             logging.info("Get Stops")
             location = self.mirror_service.locations().get(id='latest').execute()
-            text = scraper.get_stops('toronto', location)
+            station_data = scraper.get_stops('toronto', location)
             body = {
-                'text': text,
-                'menuItems': [{'action': 'DELETE'}],
-                'notification': {'level': 'DEFAULT'}
+                'text': ('%s has %s docks' % (station_data.get('name'), station_data.get('docks'))),
+                'notification': {'level': 'DEFAULT'},
+                'location':{
+                  'kind': 'mirror#location',
+                  'latitude': '43.652698',
+                  'longitude': '-79.363285',
+                  'displayName': 'Bixi Station',
+                  },
+                'menuItems': [{'action': 'NAVIGATE'}]
             }
             self.mirror_service.timeline().insert(body=body).execute()
       else:
