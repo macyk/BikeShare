@@ -52,22 +52,23 @@ def get_stations(city, station_start, station_end):
     return message
 
 def get_bikes(city, location):
+    logging.info("get_bikes")
     url = 'https://%s.bixi.com/data/bikeStations.xml' % city
     response = urllib.urlopen(url)
     content = ET.parse(response)
 
     """ create a stations dictionary """
     stations = {}
-
+    stations_distance = []
     for station in content.getroot().findall("station"):
         # Save it in the stations dictionary
         station_id = int(station.find('id').text)
         lon = float(station.find('long').text)
         lat = float(station.find('lat').text)
         distance = float(distance_on_unit_sphere(location.get('latitude'), location.get('longitude'),lat,lon))
-        """logging.info('the distance is %s.' % str(distance))"""
-        stations[distance] = {
-            'id' : station_id,
+        """logging.info('the distance is %s.' % distance)"""
+        stations[station_id] = {
+            'distance' : distance,
             'docks': int(station.find('nbEmptyDocks').text),
             'bikes': int(station.find('nbBikes').text),
             'name': station.find('name').text,
@@ -77,16 +78,54 @@ def get_bikes(city, location):
             'locked': bool(station.find('locked').text),
             'temporary': bool(station.find('temporary').text),
         }
+        stations_distance.append(stations[station_id])
     response.close()
-    logging.info(stations)
-    sorted(stations, key=lambda key: stations[distance])
-    logging.info(stations)
+    logging.info("station list %s" %stations_distance)
+    newlist = sorted(stations_distance, key=lambda k: k['distance']) 
+    logging.info("station list %s" %newlist)
     message = ''
-    for station_id, station_data in stations.iteritems():
+    for station_data in newlist:
         if station_data['bikes'] > 0:
             message = str(station_data['name'])
             return message
-    return  message
+
+def get_stops(city, location):
+    logging.info("get_bikes")
+    url = 'https://%s.bixi.com/data/bikeStations.xml' % city
+    response = urllib.urlopen(url)
+    content = ET.parse(response)
+
+    """ create a stations dictionary """
+    stations = {}
+    stations_distance = []
+    for station in content.getroot().findall("station"):
+        # Save it in the stations dictionary
+        station_id = int(station.find('id').text)
+        lon = float(station.find('long').text)
+        lat = float(station.find('lat').text)
+        distance = float(distance_on_unit_sphere(location.get('latitude'), location.get('longitude'),lat,lon))
+        """logging.info('the distance is %s.' % distance)"""
+        stations[station_id] = {
+            'distance' : distance,
+            'docks': int(station.find('nbEmptyDocks').text),
+            'bikes': int(station.find('nbBikes').text),
+            'name': station.find('name').text,
+            'longitude': lon,
+            'latitude': lat,
+            'installed': bool(station.find('installed').text),
+            'locked': bool(station.find('locked').text),
+            'temporary': bool(station.find('temporary').text),
+        }
+        stations_distance.append(stations[station_id])
+    response.close()
+    logging.info("station list %s" %stations_distance)
+    newlist = sorted(stations_distance, key=lambda k: k['distance']) 
+    logging.info("station list %s" %newlist)
+    message = ''
+    for station_data in newlist:
+        if station_data['docks'] > 0:
+            message = str(station_data['name'])
+            return message
 
 def distance_on_unit_sphere(lat1, long1, lat2, long2):
 

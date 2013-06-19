@@ -183,7 +183,10 @@ class MainHandler(webapp2.RequestHandler):
           "displayName": 'Bixi Station',
         },
         'menuItems': [{'action': 'CUSTOM','id': 'getbike', 'values':[{'displayName':'Get Bikes','iconUrl':iconUrl,
-          'callbackUrl': util.get_full_url(self, '/notify')}]}, {'action': 'DELETE'}]
+          'callbackUrl': util.get_full_url(self, '/notify')}]}, 
+          {'action': 'CUSTOM','id': 'getstop', 'values':[{'displayName':'Get Stops','iconUrl':iconUrl,
+          'callbackUrl': util.get_full_url(self, '/notify')}]},
+          {'action': 'DELETE'}]
     }
     # self.mirror_service is initialized in util.auth_required.
     self.mirror_service.timeline().insert(body=body).execute()

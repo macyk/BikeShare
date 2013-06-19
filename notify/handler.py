@@ -91,17 +91,28 @@ class NotifyHandler(webapp2.RequestHandler):
         break
       elif user_action.get('type') == 'CUSTOM':
         """ if the user clicked on get bikes option """
-        logging.info("Get Bikes?????")
-        if user_action.get('payload') == 'getbike':
-          location = self.mirror_service.locations().get(id='latest').execute()
-          logging.info(location)
-          text = scraper.get_bikes('toronto', location)
-          body = {
-              'text': text,
-              'menuItems': [{'action': 'DELETE'}],
-              'notification': {'level': 'DEFAULT'}
-          }
-          self.mirror_service.timeline().insert(body=body).execute()
+        callback_id = user_action.get('payload')
+        logging.info("callback ID is: %s" % callback_id)
+        if callback_id == 'getbike':
+            logging.info("Get Bikes")
+            location = self.mirror_service.locations().get(id='latest').execute()
+            text = scraper.get_bikes('toronto', location)
+            body = {
+                'text': text,
+                'menuItems': [{'action': 'DELETE'}],
+                'notification': {'level': 'DEFAULT'}
+            }
+            self.mirror_service.timeline().insert(body=body).execute()
+        if callback_id == 'getstop':
+            logging.info("Get Stops")
+            location = self.mirror_service.locations().get(id='latest').execute()
+            text = scraper.get_stops('toronto', location)
+            body = {
+                'text': text,
+                'menuItems': [{'action': 'DELETE'}],
+                'notification': {'level': 'DEFAULT'}
+            }
+            self.mirror_service.timeline().insert(body=body).execute()
       else:
         logging.info(
             "I don't know what to do with this notification: %s", user_action)
