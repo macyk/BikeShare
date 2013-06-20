@@ -100,7 +100,10 @@ class NotifyHandler(webapp2.RequestHandler):
             body = {
                 'text': ('%s has %s bikes' % (station_data.get('name'), station_data.get('bikes'))),
                 'notification': {'level': 'DEFAULT'},
-                'location':{'kind': 'mirror#location','latitude': '43.652698','longitude': '-79.363285','displayName': 'Bixi Station'},
+                'location':{'kind': 'mirror#location',
+                  'latitude': station_data.get('latitude'),
+                  'longitude': station_data.get('longitude'),
+                  'displayName': '%s Bixi Station' % station_data.get('name')},
                 'menuItems': [{'action':'NAVIGATE'}, {'action' :'DELETE'}]
             }
             logging.info(body)
@@ -112,12 +115,10 @@ class NotifyHandler(webapp2.RequestHandler):
             body = {
                 'text': ('%s has %s docks' % (station_data.get('name'), station_data.get('docks'))),
                 'notification': {'level': 'DEFAULT'},
-                'location':{
-                  'kind': 'mirror#location',
-                  'latitude': '43.652698',
-                  'longitude': '-79.363285',
-                  'displayName': 'Bixi Station',
-                  },
+                'location':{'kind': 'mirror#location',
+                  'latitude': station_data.get('latitude'),
+                  'longitude': station_data.get('longitude'),
+                  'displayName': '%s Bixi Station' % station_data.get('name')},
                 'menuItems': [{'action':'NAVIGATE'}, {'action' :'DELETE'}]
             }
             logging.info(body)

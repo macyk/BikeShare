@@ -89,7 +89,9 @@ def get_bikes(city, location):
             return station_data
 
 def get_stops(city, location):
-    logging.info("get_bikes")
+    logging.info('get_bikes')
+    address = location.get('address')
+    logging.info(address)
     url = 'https://%s.bixi.com/data/bikeStations.xml' % city
     response = urllib.urlopen(url)
     content = ET.parse(response)
@@ -97,7 +99,7 @@ def get_stops(city, location):
     """ create a stations dictionary """
     stations = {}
     stations_distance = []
-    for station in content.getroot().findall("station"):
+    for station in content.getroot().findall('station'):
         # Save it in the stations dictionary
         station_id = int(station.find('id').text)
         lon = float(station.find('long').text)
