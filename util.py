@@ -54,7 +54,6 @@ def store_userid(request_handler, userid):
   session = sessions.LilCookies(request_handler, SESSION_SECRET)
   session.set_secure_cookie(name='userid', value=userid)
 
-
 def create_service(service, version, creds=None):
   """Create a Google API service.
 

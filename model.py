@@ -15,10 +15,7 @@
 """Datastore models for Starter Project"""
 
 __author__ = 'alainv@google.com (Alain Vongsouvanh)'
-
-
 from google.appengine.ext import db
-
 from oauth2client.appengine import CredentialsProperty
 
 
@@ -29,3 +26,7 @@ class Credentials(db.Model):
   used by the Storage classes to store OAuth 2.0 credentials in the data store.
   """
   credentials = CredentialsProperty()
+  city = db.StringProperty()
+  name = db.StringProperty()
+  datejoined = db.DateTimeProperty(auto_now_add=True)
+

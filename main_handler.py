@@ -22,6 +22,7 @@ import jinja2
 import logging
 import os
 import webapp2
+import user_data
 
 from google.appengine.api import memcache
 from google.appengine.api import urlfetch
@@ -169,6 +170,7 @@ class MainHandler(webapp2.RequestHandler):
     """Insert a timeline item user can reply to."""
     logging.info('Inserting timeline item')
     iconUrl = util.get_full_url(self, '/static/images/bike.png')
+    user_data.set_user('macy', 'Toronto')
     body = {
         'creator': {
             'displayName': 'Bike Share APP',

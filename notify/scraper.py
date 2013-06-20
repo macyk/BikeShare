@@ -91,7 +91,7 @@ def get_bikes(city, location):
 def get_stops(city, location):
     logging.info('get_bikes')
     address = location.get('address')
-    logging.info(address)
+    logging.info(location)
     url = 'https://%s.bixi.com/data/bikeStations.xml' % city
     response = urllib.urlopen(url)
     content = ET.parse(response)

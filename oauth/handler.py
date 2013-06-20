@@ -85,11 +85,15 @@ class OAuthCodeExchangeHandler(OAuthBaseRequestHandler):
     user = users_service.userinfo().get().execute()
 
     userid = user.get('id')
-
+    username = user.get('name')
     # Store the credentials in the data store using the userid as the key.
     # TODO: Hash the userid the same way the userToken is.
-    StorageByKeyName(Credentials, userid, 'credentials').put(creds)
-    logging.info('Successfully stored credentials for user: %s', userid)
+    """StorageByKeyName(Credentials, userid, 'credentials').put(creds)"""
+    entity = Credentials(name = username,
+                        credentials = creds,
+                        key_name = userid)
+    entity.put()
+    logging.info('Successfully stored credentials for user: %s', entity)
     util.store_userid(self, userid)
 
     self._perform_post_auth_tasks(userid, creds)
@@ -122,7 +126,7 @@ class OAuthCodeExchangeHandler(OAuthBaseRequestHandler):
       # Insert a sharing contact.
       contact_body = {
           'id': 'Python Quick Start',
-          'displayName': 'Python Quick Start',
+          'displayName': 'Bike Share for Glass',
           'imageUrls': [util.get_full_url(self, '/static/images/python.png')]
       }
       mirror_service.contacts().insert(body=contact_body).execute()
@@ -131,7 +135,7 @@ class OAuthCodeExchangeHandler(OAuthBaseRequestHandler):
 
     # Insert welcome message.
     timeline_item_body = {
-        'text': 'Welcome to the Python Quick Start',
+        'text': 'Welcome to the Bike Share App!',
         'notification': {
             'level': 'DEFAULT'
         }
